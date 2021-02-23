@@ -10,7 +10,7 @@ SRC_DIR=$(APP_DIR)/src
 DOCS_DIR=$(APP_DIR)/docs
 VENV=hello-world-venv
 PROGRAM=run.py
-TOUCH_FILES=requirements 
+TOUCH_FILES=requirements docs-requirements enable-k8s-ingress 
 TEMP_FOLDERS=coverage_html_report $(VENV) $(DOCS_DIR)/build
 
 help:
@@ -28,6 +28,23 @@ requirements: virtual-env ## Install python dependencies
 		pip install -r $(APP_DIR)/test-requirements.txt; \
     )
 	touch $@
+
+docs-requirements: virtual-env ## Install python dependencies
+	@echo "=========> Installing Requirements within the created virtual environment"
+	( \
+		source $(VENV)/bin/activate; \
+		pip install -r $(APP_DIR)/docs-requirements.txt; \
+    )
+	touch $@
+
+html-docs: docs-requirements ## Build html documentation
+	@echo "=========> Building HTML documents"
+	( \
+		source $(VENV)/bin/activate; \
+		cd $(DOCS_DIR); \
+		make html; \
+	)
+	echo -e "\033[0;32m**** Documents are now built. run command 'firefox $(DOCS_DIR)/build/html/index.html' to view ****\033[0m"
 
 unittest: virtual-env requirements ## run the unit tests for the app
 	@echo "=========> Running Unit Tests"
@@ -65,10 +82,17 @@ docker-k8s-image: ## Build the k8s image in the minikube docker space so can be 
 	docker build -f ops/docker/hello-world/Dockerfile -t hello-world-test . && \
 	docker ps 
 
-deploy-k8s-service: docker-k8s-image ## deploy out all the minikube resources
+enable-k8s-ingress: ## enable ingress addon in minikube
+	minikube addons enable ingress
+	touch $@
+
+deploy-k8s-service: docker-k8s-image enable-k8s-ingress ## deploy out all the minikube resources
 	kubectl apply -f ops/kubernetes/hello-world-deployment.yml
 	kubectl apply -f ops/kubernetes/hello-world-service.yaml
 	kubectl apply -f ops/kubernetes/hello-world-ingress.yaml
+
+	@echo -e "\033[0;32m**** Dozing for a few while the services start .... ****\033[0m"
+	sleep 30s
 	minikube ip
 	$(eval IP=$(shell minikube ip))
 	curl -s -I -H "Host: hello.world" http://$(IP)/helloworld | grep "200 OK" && echo -e "\033[0;32m**** K8s deploy Success ****\033[0m" || echo -e "\033[0;31m**** K8s Service deploy Failed ****\033[0m" 
