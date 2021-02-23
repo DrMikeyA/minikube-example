@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minikube-ingress
+  name: hello-world-ingress
 spec:
   rules:
   - host: hello.world
