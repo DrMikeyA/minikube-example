@@ -85,8 +85,3 @@ TODO
 1. Optimise the docker image, could potentially use a more efficient image for production
 2. Add in more documentation about the deployed configuration code
 
-
-
-
-
-```
