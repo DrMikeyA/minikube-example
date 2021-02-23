@@ -13,11 +13,14 @@ PROGRAM=run.py
 TOUCH_FILES=requirements 
 TEMP_FOLDERS=coverage_html_report $(VENV) $(DOCS_DIR)/build
 
-virtual-env:
+help:
+	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+virtual-env: ## Creates a virtual environment for the python dependencies
 	@echo "=========> Creating local python venv"
 	python3 -m venv $(VENV)/
 
-requirements: virtual-env
+requirements: virtual-env ## Install python dependencies
 	@echo "=========> Installing Requirements within the created virtual environment"
 	( \
 		source $(VENV)/bin/activate; \
@@ -26,43 +29,43 @@ requirements: virtual-env
     )
 	touch $@
 
-unittest: virtual-env requirements
+unittest: virtual-env requirements ## run the unit tests for the app
 	@echo "=========> Running Unit Tests"
 	( \
 		source $(VENV)/bin/activate; \
 		PYTHONPATH=$(APP_DIR):$(PYTHONPATH) pytest $(TEST_NAME) ; \
 	)
 
-coverage: virtual-env requirements
+coverage: virtual-env requirements ## generate a coverage report for the unit tests
 	@echo "=========> Running Coverage Report"
 	( \
 		source $(VENV)/bin/activate; \
 		PYTHONPATH=$(APP_DIR):$(PYTHONPATH) pytest --cov-report term-missing --cov=src $(TEST_DIR); \
 	)
 
-ci: unittest coverage
+ci: unittest coverage ## unit tests and coverage report in one
 
-docker-image:
+docker-image: ## Build a local version of the docker image for testing
 	docker build -f ops/docker/helloworld/Dockerfile -t hello-world .
 
-docker-stop:
+docker-stop: ## stop any running docker images from this build and remove ready for rebuild
 	docker stop hello-world-test || true
 	docker rm hello-world-test || true
 
-container-test: docker-image docker-stop
+container-test: docker-image docker-stop ## build and test the docker image locally
 	docker run -d --name hello-world-test -p 5010:5010 hello-world
 	curl -s  http://localhost:5010/helloworld | grep -q 'Hello World' && echo -e "\033[0;32m**** Container Test Passed ****\033[0m" || echo -e "\033[0;31m**** Container Test Failed ****\033[0m"
 
 	docker stop hello-world-test
 	docker rm hello-world-test
 
-docker-k8s-image:
+docker-k8s-image: ## Build the k8s image in the minikube docker space so can be referenced in the pod deployment
 	eval $$(minikube docker-env) && \
 	docker ps && \
 	docker build -f ops/docker/hello-world/Dockerfile -t hello-world-test . && \
 	docker ps 
 
-deploy-k8s-serice: docker-k8s-image
+deploy-k8s-service: docker-k8s-image ## deploy out all the minikube resources
 	kubectl apply -f ops/kubernetes/hello-world-deployment.yml
 	kubectl apply -f ops/kubernetes/hello-world-service.yaml
 	kubectl apply -f ops/kubernetes/hello-world-ingress.yaml
@@ -70,15 +73,15 @@ deploy-k8s-serice: docker-k8s-image
 	$(eval IP=$(shell minikube ip))
 	curl -s -I -H "Host: hello.world" http://$(IP)/helloworld | grep "200 OK" && echo -e "\033[0;32m**** K8s deploy Success ****\033[0m" || echo -e "\033[0;31m**** K8s Service deploy Failed ****\033[0m" 
 
-clean-k8s-service:
+clean-k8s-service: ## clean the minikube resources
 	kubectl delete -f ops/kubernetes/hello-world-deployment.yml || true
 	kubectl delete -f ops/kubernetes/hello-world-service.yaml || true
 	kubectl delete -f ops/kubernetes/hello-world-ingress.yaml || true
 
-clean: clean-k8s-service docker-stop
+clean: clean-k8s-service docker-stop ## clean everything up
 	-rm $(TOUCH_FILES)
 	-rm -Rf $(TEMP_FOLDERS)
 	docker rmi hello-world-test || true
 
 
-.PHONY: clean unittest coverage 
+.PHONY: help clean clean-k8s-service unittest coverage docker-image docker-stop container-test docker-k8s-image deploy-k8s-service  
