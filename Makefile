@@ -14,7 +14,7 @@ TOUCH_FILES=requirements
 TEMP_FOLDERS=coverage_html_report $(VENV) $(DOCS_DIR)/build
 
 help:
-	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36mmake %-30s\033[0m %s\n", $$1, $$2}'
 
 virtual-env: ## Creates a virtual environment for the python dependencies
 	@echo "=========> Creating local python venv"
