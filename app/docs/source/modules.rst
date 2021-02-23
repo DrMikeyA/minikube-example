@@ -1,5 +1,5 @@
 Module Reference
 ================
              
-.. automodule:: entrypoint
+.. automodule:: run
    :members:
