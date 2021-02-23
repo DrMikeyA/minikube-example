@@ -49,15 +49,15 @@ Folder Structure
 Files of note
 -------------
 
-`/app/src/run.py` The actual executable Flask API answering on `/helloworld`
-`/app/docs/source/*.rst` Documentation skeleton for the project
-`/app/docs/api-specification/helloworld.yaml` OpenAPI specification for the Flask hello world endpoints
-`/ops/docker/hello-world/Dockerfile` Container build (see TODO notes at the end for further optimisations required here)
-`/ops/kubernetes/*.yml` Definition files for the kubernetes resources. Deployments, Service and Ingress
-`/app/test/test_*` Test files for unit testing the source code 
-`/app/*requirements.txt` Python dependency files for the app, test and documentation
-`.coveragerc` rules for coverage report for unit tests
-`Makefile` The brains of the operation, all the automation macros to build, test and deploy the solution.
+- `/app/src/run.py` The actual executable Flask API answering on `/helloworld`
+- `/app/docs/source/*.rst` Documentation skeleton for the project
+- `/app/docs/api-specification/helloworld.yaml` OpenAPI specification for the Flask hello world endpoints
+- `/ops/docker/hello-world/Dockerfile` Container build (see TODO notes at the end for further optimisations required here)
+- `/ops/kubernetes/*.yml` Definition files for the kubernetes resources. Deployments, Service and Ingress
+- `/app/test/test_*` Test files for unit testing the source code 
+- `/app/*requirements.txt` Python dependency files for the app, test and documentation
+- `.coveragerc` rules for coverage report for unit tests
+- `Makefile` The brains of the operation, all the automation macros to build, test and deploy the solution.
 
 Order of Execution
 ------------------
