@@ -51,7 +51,7 @@ For a shortcut `make deploy-k8s-service` can be run independently and will just 
 For the curious
 ---------------
 
-`make docs` - Will produce a set of documentation of the code and the API spec that can be deployed to a support portal during CI/CD
+`make html-docs` - Will produce a set of documentation of the code and the API spec that can be deployed to a support portal during CI/CD
 
 Makefile Macros
 ---------------
