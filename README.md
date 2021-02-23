@@ -1,6 +1,34 @@
 Hello World minikube tech test
 ==============================
 
+This project contains all the resources and code required to:
+
+1. Build and unit test a basic "Hello World!" flask app.
+2. Report the code coverage of the testing
+3. Build supporting documentation
+4. Build the flask app into a deployable container
+5. Deploy the container and routing to `minikube`
+6. Test the container build locally and deployed to `minikube`
+
+No system files were harmed during the making of this demonstration, but it does contain a fully working and operational ---battle station--- ... sorry minikube deployment. 
+
+Dependencies
+------------
+
+1. Installed and working docker environment
+2. Installed and working minikube environment
+3. Python
+4. User access to all above resources, no `sudo` required or coded for. So user must be in the `docker` group.
+5. GNU Make (usually installed with dev tools on a linux machine). The project was built and tested with `GNU Make 4.3`
+
+Software versions tested with
+
+- `minikube` - v1.17.1
+- `kubectl` - v1.20.2 (server and client)
+- `docker` - 20.10.2
+- `python` - 3.7.2
+
+The solution will build and configure its own virtual environment so no preparatory work required. The Makefile macros take care of all this.
 
 Folder Structure
 ----------------
@@ -84,4 +112,5 @@ TODO
 
 1. Optimise the docker image, could potentially use a more efficient image for production
 2. Add in more documentation about the deployed configuration code
+3. `make clean` tidy up to remove all python compiled files
 
